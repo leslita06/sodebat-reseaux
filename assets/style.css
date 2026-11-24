@@ -74,7 +74,7 @@ h4{font-size:17px;font-weight:800;margin:12px 0 6px;color:#1f2430}
 .post{padding:0;overflow:hidden;display:flex;flex-direction:column}
 .post .th{position:relative;aspect-ratio:4/5;background:var(--fd);cursor:zoom-in;border:0;padding:0;display:block;width:100%}
 .post .th img{width:100%;height:100%;object-fit:cover}
-.post .n{position:absolute;left:10px;top:10px;background:rgba(255,255,255,.95);color:var(--bl);font-weight:900;font-size:13px;padding:4px 9px;border-radius:8px}
+.post .n{position:absolute;right:10px;bottom:10px;background:rgba(255,255,255,.95);color:var(--bl);font-weight:900;font-size:13px;padding:4px 9px;border-radius:8px}
 .post .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
 .post .tt{font-weight:800;font-size:15px;color:#1f2430}
 .post .lg{font-size:13px;color:var(--mu)}
