@@ -1,6 +1,11 @@
 (function () {
   'use strict';
-  var D = window.SD, I = D.icons, V = "2";
+  var D = window.SD, I = D.icons, V = "4";
+  var MOB = window.matchMedia('(max-width:640px)');
+  var COURT = { 'Qualité visuelle': ['Qualité', 'visuelle'], 'Cohérence de marque': ['Cohérence', 'de marque'], 'Contact et conversion': ['Contact', 'et conversion'], 'Présence LinkedIn': ['Présence', 'LinkedIn'], 'Preuves et réalisations': ['Preuves et', 'réalisations'] };
+  function radLab() { return D.scores.map(function (s) { return MOB.matches ? (COURT[s[0]] || s[0]) : s[0]; }); }
+  Chart.defaults.responsive = true;
+  Chart.defaults.maintainAspectRatio = false;
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -60,16 +65,18 @@
     var lab = P.map(function (c) { return c[0].replace(/ \(.*\)/, ''); });
     if (cAb) { cAb.data.labels = lab; cAb.data.datasets[0].data = P.map(function (c) { return c[2]; }); cAb.data.datasets[0].backgroundColor = P.map(function (c) { return NET[c[1]].c; }); cAb.update(); return; }
     cAb = new Chart($('#c-abonnes'), { type: 'bar', data: { labels: lab, datasets: [{ data: P.map(function (c) { return c[2]; }), backgroundColor: P.map(function (c) { return NET[c[1]].c; }), borderRadius: 8, maxBarThickness: 34 }] },
-      options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (x) { return fmt(x.raw) + ' abonnés'; } } } }, scales: { x: { grid: { color: '#EEF1F5' }, beginAtZero: true }, y: { grid: { display: false }, ticks: { font: { weight: 700 } } } } } });
+      options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (x) { return fmt(x.raw) + ' abonnés'; } } } }, scales: { x: { grid: { color: '#EEF1F5' }, beginAtZero: true }, y: { grid: { display: false }, ticks: { font: { weight: 700, size: MOB.matches ? 11 : 12 } } } } } });
   }
   seg('#f-reseau', renderComptes);
   renderComptes('tous');
 
-  new Chart($('#c-radar'), { type: 'radar', data: { labels: D.scores.map(function (s) { return s[0]; }), datasets: [{ data: D.scores.map(function (s) { return s[1]; }), backgroundColor: 'rgba(56,182,255,.25)', borderColor: BL, pointBackgroundColor: BL, borderWidth: 2 }] },
-    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, backdropColor: 'transparent' }, pointLabels: { font: { size: 12, weight: 700 }, color: '#3A3A3B' }, grid: { color: '#E3E8EF' }, angleLines: { color: '#E3E8EF' } } } } });
+  var cRad = new Chart($('#c-radar'), { type: 'radar', data: { labels: radLab(), datasets: [{ data: D.scores.map(function (s) { return s[1]; }), backgroundColor: 'rgba(56,182,255,.25)', borderColor: BL, pointBackgroundColor: BL, borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, backdropColor: 'transparent' }, pointLabels: { font: function () { return { size: MOB.matches ? 10.5 : 12, weight: 700 }; }, color: '#3A3A3B', padding: MOB.matches ? 4 : 8 }, grid: { color: '#E3E8EF' }, angleLines: { color: '#E3E8EF' } } } } });
+  function majMob() { cRad.data.labels = radLab(); cRad.options.scales.r.pointLabels.padding = MOB.matches ? 4 : 8; cRad.update(); if (cAb) { cAb.options.scales.y.ticks.font.size = MOB.matches ? 11 : 12; cAb.update(); } }
+  if (MOB.addEventListener) MOB.addEventListener('change', majMob); else if (MOB.addListener) MOB.addListener(majMob);
 
   new Chart($('#c-mois'), { type: 'bar', data: { labels: D.igmois.map(function (m) { return m[0]; }), datasets: [{ data: D.igmois.map(function (m) { return m[1]; }), backgroundColor: D.igmois.map(function (m) { return m[1] ? BL : '#E3E8EF'; }), borderRadius: 6, minBarLength: 4 }] },
-    options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (x) { return x.raw + ' publication' + (x.raw > 1 ? 's' : ''); } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#EEF1F5' } }, x: { grid: { display: false } } } } });
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (x) { return x.raw + ' publication' + (x.raw > 1 ? 's' : ''); } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#EEF1F5' } }, x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: MOB.matches ? 10 : 12 } } } } } });
 
   var igL = D.igposts.map(function (p) { return { src: 'img/' + p[5] + '?v=' + V, cap: p[0] + ', ' + p[1] + ', ' + p[2] }; });
   $('#igposts').innerHTML = D.igposts.map(function (p, k) {
